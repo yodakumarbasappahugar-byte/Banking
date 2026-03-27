@@ -66,6 +66,7 @@ Banking/
 | 2026-03-27 | User Management & Interactive UI | Added a secure user listing API, a searchable 'Users' management page, and an interactive notification tray with premium glassmorphism effects and real-time state management. |
 | 2026-03-27 | Profile Dropdown & UI Refinement | Implemented a functional profile dropdown with user details (email/ID) and logout. Refined the notification tray to highlight active states and removed background blur for better visibility during interaction. |
 | 2026-03-27 | Search & Account Details | Made the header search bar functional for filtering transactions. Enhanced the profile dropdown with generated mock Account Number and IFSC codes for improved user-friendliness. |
+| 2026-03-27 | Functional Profile & UI Refinement | Implemented a detailed Account Details modal, made 'My Profile' and 'Settings' buttons interactive, and refined the overall tray UI with improved hover states and responsiveness. |
 
 ---
 

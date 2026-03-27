@@ -1,20 +1,26 @@
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 20px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
   gap: 20px;
 }
 
 .title {
   font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  font-weight: 700;
+  margin-bottom: 4px;
 }
 
 .subtitle {
@@ -23,22 +29,35 @@
 }
 
 .searchBox {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 10px 20px;
-  border-radius: 12px;
-  width: 350px;
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+}
+
+.searchBox svg {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
 }
 
 .searchBox input {
-  background: none;
-  border: none;
-  color: white;
-  outline: none;
   width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 15px 12px 45px;
+  color: white;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.searchBox input:focus {
+  border-color: #6366f1;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
 }
 
 .userList {
@@ -50,27 +69,32 @@
 
 .tableHeader {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  padding: 15px 30px;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr;
+  padding: 15px 25px;
   background: rgba(255, 255, 255, 0.03);
-  color: #94a3b8;
-  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
   font-weight: 600;
+  color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .userRow {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  padding: 20px 30px;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr;
+  padding: 20px 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   transition: background 0.2s;
 }
 
 .userRow:hover {
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.userRow:last-child {
+  border-bottom: none;
 }
 
 .userInfo {
@@ -82,80 +106,104 @@
 .avatar {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 16px;
   color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .details {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+}
+
+.fullName {
+  font-weight: 600;
+  font-size: 15px;
+  color: white;
 }
 
 .email {
-  font-weight: 500;
-  margin-bottom: 2px;
-}
-
-.id {
-  font-size: 11px;
+  font-size: 12px;
   color: #64748b;
 }
 
+.accNo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.ifsc {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
 .balance {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 15px;
   color: #10b981;
 }
 
-.mobileNumber, .joinedDate {
-  color: #94a3b8;
-  font-size: 14px;
+.joinedDate {
+  font-size: 13px;
+  color: #64748b;
 }
 
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 60vh;
-  color: #94a3b8;
-}
-
-.noResults {
-  padding: 50px;
+.noResults, .loading {
+  padding: 60px;
   text-align: center;
-  color: #94a3b8;
+  color: #64748b;
+  font-style: italic;
 }
 
-.showMobile { display: none; }
-
+/* Responsiveness */
 @media (max-width: 1024px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
+  .tableHeader, .userRow {
+    grid-template-columns: 2fr 1.5fr 1fr 1fr;
   }
-  
-  .searchBox {
-    width: 100%;
+  .hideTablet {
+    display: none;
   }
 }
 
 @media (max-width: 768px) {
-  .hideMobile {
-    display: none;
-  }
-  
   .tableHeader, .userRow {
     grid-template-columns: 1fr 1fr;
   }
-  
-  .showMobile {
-    display: block;
-    font-size: 11px;
-    color: #64748b;
-    margin-top: 2px;
+  .hideMobile {
+    display: none;
+  }
+  .userInfo {
+    gap: 10px;
+  }
+  .fullName {
+    font-size: 14px;
+  }
+  .balance {
+    text-align: right;
+  }
+  .tableHeader .colBalance {
+    text-align: right;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .searchBox {
+    max-width: 100%;
   }
 }

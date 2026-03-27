@@ -163,7 +163,7 @@ def list_users():
         conn = psycopg2.connect(db_url)
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        cur.execute("SELECT id, email, mobile_number, balance, created_at FROM users ORDER BY created_at DESC")
+        cur.execute("SELECT id, full_name, email, mobile_number, balance, created_at FROM users ORDER BY created_at DESC")
         users = cur.fetchall()
         
         # Convert balance to float for JSON serialization
