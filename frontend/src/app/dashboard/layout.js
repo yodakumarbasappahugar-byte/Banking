@@ -33,41 +33,12 @@ export default function DashboardLayout({ children }) {
       router.push('/login');
     }
 
-    // Initialize Audio
-    debitAudio.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3'); // Debit/Alert
-    creditAudio.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2012/2012-preview.mp3'); // Credit/Success
-
-    const handleNewTransaction = (e) => {
-      const { type, amount, message } = e.detail;
-      const newNotif = {
-        id: Date.now(),
-        title: type === 'DEBIT' ? 'Transaction Sent' : 'Payment Received',
-        desc: message,
-        time: 'Just now',
-        type: type === 'DEBIT' ? 'warning' : 'success',
-        icon: type === 'DEBIT' ? '💸' : '💰',
-        isNew: true
-      };
-      
-      setNotifications(prev => [newNotif, ...prev]);
-      setNotifOpen(true); // Open tray to show alert
-
-      // Play Sound
-      if (type === 'DEBIT') {
-        debitAudio.current.play().catch(e => console.log("Audio play failed", e));
-      } else {
-        creditAudio.current.play().catch(e => console.log("Audio play failed", e));
-      }
-    };
-
-    window.addEventListener('new-transaction', handleNewTransaction);
     window.addEventListener('storage', () => {
       const u = localStorage.getItem('user');
       if (u) setUser(JSON.parse(u));
     });
 
     return () => {
-      window.removeEventListener('new-transaction', handleNewTransaction);
     };
   }, [router]);
 

@@ -70,6 +70,7 @@ Banking/
 | 2026-03-27 | User Management Overhaul | Populated the database with 10+ mock accounts and revamped the User Management UI into a professional table with columns for Name, Email, Account Number, IFSC, and Balance. |
 | 2026-03-27 | My Cards & Security Sections | Implemented functional 'My Cards' and 'Security' pages. Added a premium virtual card UI with management tools and a security hub with password management and activity logging. |
 | 2026-03-27 | Progressive Dashboard Features | Enabled functional multi-card generation in 'My Cards' and created a dedicated 'Account Settings' page for profile management, fully integrated with the user dropdown. |
+| 2026-03-27 | Real-time Alerts & Card Purge | Implemented card removal, holder name sync, and a notification sound system. Added distinct audio alerts for CREDIT and DEBIT transactions and real-time tray updates. |
 
 ---
 

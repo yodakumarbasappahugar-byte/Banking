@@ -87,15 +87,6 @@ function DashboardContent() {
       setAmount('');
       // Refresh summary
       fetchSummary(user.id);
-
-      // Dispatch event for real-time notification & sound
-      window.dispatchEvent(new CustomEvent('new-transaction', {
-        detail: {
-          type: 'DEBIT',
-          amount: parseFloat(amount),
-          message: `Sent $${parseFloat(amount).toLocaleString()} to ${receiverEmail}`
-        }
-      }));
     } catch (err) {
       setMessage({ text: err.message, type: 'error' });
     } finally {
