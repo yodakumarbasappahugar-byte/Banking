@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import styles from '../login/login.module.css'; // Reusing styles for consistency
-import signupStyles from './signup.module.css';
 import Link from 'next/link';
 
 export default function SignupPage() {

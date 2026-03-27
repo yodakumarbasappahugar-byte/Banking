@@ -33,9 +33,9 @@ Banking/
 - [x] Create project tracking document
 
 ### Phase 2: Database Setup (Neon PostgreSQL)
-- [ ] Design database schema
-- [ ] Set up Neon project
-- [ ] Create tables and relationships
+- [x] Design database schema
+- [x] Set up Neon project
+- [x] Create tables and relationships
 - [ ] Seed initial data
 
 ### Phase 3: Backend Setup (FastAPI on Render)
@@ -59,6 +59,7 @@ Banking/
 |------|----------|---------|
 | 2026-03-23 | Project initialized | Created 3-folder structure: `db/`, `backend/`, `frontend/` |
 | 2026-03-27 | Fixed Deployments | Resolved Render `ModuleNotFoundError` by correcting `render.yaml` start command syntax (`$PORT`). Resolved Vercel 404 by fixing a missing CSS import causing `next build` to fail, and modified `redeploy.py` to correctly rely on Vercel's Git trigger rather than the conflicting file upload API. |
+| 2026-03-27 | Fixed CORS Errors | Identified that unhandled `psycopg2` exceptions (e.g., from missing DB tables) bypassed FastAPI's CORS middleware. Added explicit exception handling in `main.py` routing to return structured 500 JSON errors with proper `Access-Control-Allow-Origin` headers. |
 
 ---
 
