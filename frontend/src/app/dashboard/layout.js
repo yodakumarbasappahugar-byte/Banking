@@ -23,6 +23,11 @@ export default function DashboardLayout({ children }) {
   const router = useRouter();
   const searchInputRef = useRef(null);
 
+  const handleCopy = (text, label) => {
+    navigator.clipboard.writeText(text);
+    alert(`${label} copied to clipboard!`);
+  };
+
   const fetchBalance = async (userId) => {
     try {
       const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://banking-backend-api.onrender.com'}/api/transactions/summary/${userId}`);
@@ -239,17 +244,29 @@ export default function DashboardLayout({ children }) {
                 
                 <div className={styles.modalSections}>
                   <div className={styles.modalSection}>
-                    <label>Account Holder</label>
-                    <div className={styles.modalVal}>{user?.full_name || 'Nidhi Member'}</div>
+                    <label>Full Name</label>
+                    <div className={styles.modalFlex}>
+                      <div className={styles.modalVal}>{user?.full_name || 'Nidhi Member'}</div>
+                    </div>
                   </div>
                   <div className={styles.modalGrid}>
                      <div className={styles.modalSection}>
                       <label>Account Number</label>
-                      <div className={styles.mono}>{getMockAccNo(user?.id)}</div>
+                      <div className={styles.modalFlex}>
+                        <div className={styles.mono}>{getMockAccNo(user?.id)}</div>
+                        <button className={styles.copyBtn} onClick={() => handleCopy(getMockAccNo(user?.id), 'Account Number')}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </button>
+                      </div>
                     </div>
                     <div className={styles.modalSection}>
                       <label>IFSC Code</label>
-                      <div className={styles.mono}>{mockIFSC}</div>
+                      <div className={styles.modalFlex}>
+                        <div className={styles.mono}>{mockIFSC}</div>
+                        <button className={styles.copyBtn} onClick={() => handleCopy(mockIFSC, 'IFSC Code')}>
+                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <div className={styles.modalSection}>
