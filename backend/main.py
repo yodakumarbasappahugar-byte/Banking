@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from passlib.context import CryptContext
+import bcrypt
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
@@ -21,7 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Note: passlib.context.CryptContext was causing a 72-byte ValueError with modern bcrypt versions
+# We now use the bcrypt library directly.
 
 class UserSignup(BaseModel):
     email: str
@@ -54,7 +55,10 @@ def signup(user: UserSignup):
         if cur.fetchone():
             raise HTTPException(status_code=400, detail="Email or Mobile Number already registered")
             
-        hashed_pwd = pwd_context.hash(user.password)
+        # Salt is generated automatically in hashpw
+        password_bytes = user.password.encode('utf-8')
+        salt = bcrypt.gensalt()
+        hashed_pwd = bcrypt.hashpw(password_bytes, salt).decode('utf-8')
         cur.execute(
             "INSERT INTO users (email, mobile_number, password_hash) VALUES (%s, %s, %s) RETURNING id, email, mobile_number",
             (user.email, user.mobile_number, hashed_pwd)
@@ -84,7 +88,10 @@ def signin(user: UserLogin):
         cur.execute("SELECT id, email, password_hash FROM users WHERE email = %s", (user.email,))
         db_user = cur.fetchone()
         
-        if not db_user or not pwd_context.verify(user.password, db_user["password_hash"]):
+        password_bytes = user.password.encode('utf-8')
+        db_hash_bytes = db_user["password_hash"].encode('utf-8')
+        
+        if not db_user or not bcrypt.checkpw(password_bytes, db_hash_bytes):
             raise HTTPException(status_code=401, detail="Invalid email or password")
             
         return {"message": "Login successful", "user": {"id": db_user["id"], "email": db_user["email"]}}
