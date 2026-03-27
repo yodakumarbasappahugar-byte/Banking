@@ -61,6 +61,10 @@ def signup(user: UserSignup):
         )
         new_user = cur.fetchone()
         return {"message": "Account created successfully!", "user": new_user}
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         cur.close()
         conn.close()
@@ -84,6 +88,10 @@ def signin(user: UserLogin):
             raise HTTPException(status_code=401, detail="Invalid email or password")
             
         return {"message": "Login successful", "user": {"id": db_user["id"], "email": db_user["email"]}}
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         cur.close()
         conn.close()
