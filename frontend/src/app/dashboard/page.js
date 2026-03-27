@@ -1,11 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './dashboard.module.css';
 
 export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div>Loading Overview...</div>}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
+function DashboardContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = searchParams.get('q') || '';
+
   const [user, setUser] = useState(null);
   const [summary, setSummary] = useState({ balance: 0, transactions: [] });
   const [loading, setLoading] = useState(true);
@@ -119,18 +130,30 @@ export default function DashboardPage() {
           </div>
           
           <div className={styles.transList}>
-            {summary.transactions.length > 0 ? (
-              summary.transactions.map((t) => (
-                <TransactionItem 
-                  key={t.id}
-                  name={t.sender_id === user.id ? `To: ${t.receiver_email}` : `From: ${t.sender_email}`}
-                  date={new Date(t.created_at).toLocaleDateString()} 
-                  amount={t.sender_id === user.id ? `-$${t.amount}` : `+$${t.amount}`}
-                  positive={t.sender_id !== user.id}
-                />
-              ))
+            {(summary.transactions || []).filter(t => 
+              t.receiver_email?.toLowerCase().includes(query.toLowerCase()) ||
+              t.sender_email?.toLowerCase().includes(query.toLowerCase()) ||
+              t.amount.toString().includes(query)
+            ).length > 0 ? (
+              summary.transactions
+                .filter(t => 
+                  t.receiver_email?.toLowerCase().includes(query.toLowerCase()) ||
+                  t.sender_email?.toLowerCase().includes(query.toLowerCase()) ||
+                  t.amount.toString().includes(query)
+                )
+                .map((t) => (
+                  <TransactionItem 
+                    key={t.id}
+                    name={t.sender_id === user.id ? `To: ${t.receiver_email}` : `From: ${t.sender_email}`}
+                    date={new Date(t.created_at).toLocaleDateString()} 
+                    amount={t.sender_id === user.id ? `-$${t.amount}` : `+$${t.amount}`}
+                    positive={t.sender_id !== user.id}
+                  />
+                ))
             ) : (
-              <p className={styles.noData}>No recent transactions</p>
+              <p className={styles.noData}>
+                {query ? `No transactions matching "${query}"` : 'No recent transactions'}
+              </p>
             )}
           </div>
         </div>

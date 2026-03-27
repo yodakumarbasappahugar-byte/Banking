@@ -64,6 +64,7 @@ Banking/
 | 2026-03-27 | Dashboard & Redirect | Created a premium, dark-themed dashboard at `/dashboard` and updated the login flow to automatically redirect users upon successful authentication, replacing the old success alert. |
 | 2026-03-27 | Functional & Responsive Dashboard | Implemented a full fund transfer system with SQL atomicity, real-time balance fetching, and transaction history. Added mobile responsiveness with a toggleable sidebar and feedback toasts for a premium user experience. |
 | 2026-03-27 | User Management & Interactive UI | Added a secure user listing API, a searchable 'Users' management page, and an interactive notification tray with premium glassmorphism effects and real-time state management. |
+| 2026-03-27 | Profile Dropdown & UI Refinement | Implemented a functional profile dropdown with user details (email/ID) and logout. Refined the notification tray to highlight active states and removed background blur for better visibility during interaction. |
 
 ---
 

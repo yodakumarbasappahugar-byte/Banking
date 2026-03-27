@@ -1,24 +1,38 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import styles from './dashboard.module.css';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 export default function DashboardLayout({ children }) {
+  return (
+    <Suspense fallback={<div>Loading Layout...</div>}>
+      <DashboardContent>{children}</DashboardContent>
+    </Suspense>
+  );
+}
+
+function DashboardContent({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-  }, []);
+    // Sync local search query with URL on load
+    const q = searchParams.get('q');
+    if (q) setSearchQuery(q);
+  }, [searchParams]);
 
   const mockNotifs = [
     { id: 1, title: 'Transfer Successful', msg: 'You sent $200.00 to alex@test.com', time: '2m ago' },
@@ -26,10 +40,28 @@ export default function DashboardLayout({ children }) {
     { id: 3, title: 'System Update', msg: 'Dashboard v1.2 is now live with Users view', time: 'Yesterday' }
   ];
 
+  // Derive mock account info
+  const mockAccNo = user ? `8899${user.id.toString().padStart(8, '0')}` : '---';
+  const mockIFSC = 'NB0001';
+
   const handleLogout = (e) => {
     e?.preventDefault();
     localStorage.removeItem('user');
     router.push('/login');
+  };
+
+  const handleSearchChange = (e) => {
+    const val = e.target.value;
+    setSearchQuery(val);
+    
+    // Update URL query params
+    const params = new URLSearchParams(searchParams);
+    if (val) {
+      params.set('q', val);
+    } else {
+      params.delete('q');
+    }
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -46,7 +78,6 @@ export default function DashboardLayout({ children }) {
     setIsNotifOpen(false);
   };
 
-  // Close trays on outside click
   useEffect(() => {
     const closeTrays = () => {
       setIsNotifOpen(false);
@@ -58,21 +89,14 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className={styles.wrapper}>
-      {/* Sidebar Overlay - only for mobile sidebar, no blur for trays */}
       {isSidebarOpen && (
         <div 
           className={styles.overlay} 
           onClick={() => setIsSidebarOpen(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            zIndex: 999,
-          }}
+          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 999 }}
         ></div>
       )}
 
-      {/* Sidebar */}
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.logo}>
           <div className={styles.logoIcon}>N</div>
@@ -106,9 +130,7 @@ export default function DashboardLayout({ children }) {
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <main className={styles.main}>
-        {/* Top Header */}
         <header className={styles.header}>
           <button className={styles.menuBtn} onClick={(e) => { e.stopPropagation(); toggleSidebar(); }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -116,7 +138,12 @@ export default function DashboardLayout({ children }) {
           
           <div className={styles.searchBar}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="Search transactions..." />
+            <input 
+              type="text" 
+              placeholder="Search transactions..." 
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
           </div>
           
           <div className={styles.userProfile}>
@@ -124,7 +151,6 @@ export default function DashboardLayout({ children }) {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               <span className={styles.notifBadge}></span>
               
-              {/* Notification Tray */}
               {isNotifOpen && (
                 <div className={styles.notifTray} onClick={(e) => e.stopPropagation()}>
                    <div className={styles.trayHeader}>Notifications</div>
@@ -148,16 +174,16 @@ export default function DashboardLayout({ children }) {
             >
               <div className={styles.avatar}>{user?.email ? user.email[0].toUpperCase() : 'U'}</div>
               
-              {/* Profile Dropdown */}
               {isProfileOpen && (
                 <div className={styles.profileTray} onClick={(e) => e.stopPropagation()}>
                   <div className={styles.profileHeader}>
                     <span className={styles.profileEmail}>{user?.email || 'User Account'}</span>
-                    <span className={styles.profileId}>User ID: #00{user?.id || '---'}</span>
+                    <span className={styles.profileDetail}>Account: {mockAccNo}</span>
+                    <span className={styles.profileDetail}>IFSC: {mockIFSC}</span>
                   </div>
                   <div className={styles.trayBody}>
                     <div className={styles.trayItem}>My Profile</div>
-                    <div className={styles.trayItem}>Settings</div>
+                    <div className={styles.trayItem}>Account Settings</div>
                     <div className={`${styles.trayItem} ${styles.logoutItem}`} onClick={handleLogout}>
                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                        <span>Logout</span>
