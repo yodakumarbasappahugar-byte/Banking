@@ -68,6 +68,7 @@ Banking/
 | 2026-03-27 | Search & Account Details | Made the header search bar functional for filtering transactions. Enhanced the profile dropdown with generated mock Account Number and IFSC codes for improved user-friendliness. |
 | 2026-03-27 | Functional Profile & UI Refinement | Implemented a detailed Account Details modal, made 'My Profile' and 'Settings' buttons interactive, and refined the overall tray UI with improved hover states and responsiveness. |
 | 2026-03-27 | User Management Overhaul | Populated the database with 10+ mock accounts and revamped the User Management UI into a professional table with columns for Name, Email, Account Number, IFSC, and Balance. |
+| 2026-03-27 | My Cards & Security Sections | Implemented functional 'My Cards' and 'Security' pages. Added a premium virtual card UI with management tools and a security hub with password management and activity logging. |
 
 ---
 

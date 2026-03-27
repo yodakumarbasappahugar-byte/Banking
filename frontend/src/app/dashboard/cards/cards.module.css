@@ -45,6 +45,38 @@
   border-style: solid;
 }
 
+.cardSelector {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+  overflow-x: auto;
+}
+
+.selectorBtn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.selectorBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.activeSelector {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -64,6 +96,11 @@
   flex-direction: column;
   justify-content: space-between;
   transition: all 0.5s ease;
+}
+
+.mastercardBg {
+  background: linear-gradient(135deg, #431407 0%, #1c0a06 100%);
+  border-color: rgba(234, 88, 12, 0.2);
 }
 
 .virtualCard::before {
