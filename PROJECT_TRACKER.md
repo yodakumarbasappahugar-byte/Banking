@@ -58,7 +58,8 @@ Banking/
 | Date | Decision | Details |
 |------|----------|---------|
 | 2026-03-23 | Project initialized | Created 3-folder structure: `db/`, `backend/`, `frontend/` |
+| 2026-03-27 | Fixed Deployments | Resolved Render `ModuleNotFoundError` by correcting `render.yaml` start command syntax (`$PORT`). Resolved Vercel 404 by fixing a missing CSS import causing `next build` to fail, and modified `redeploy.py` to correctly rely on Vercel's Git trigger rather than the conflicting file upload API. |
 
 ---
 
-*Last updated: 2026-03-23*
+*Last updated: 2026-03-27*

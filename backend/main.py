@@ -41,7 +41,11 @@ def signup(user: UserSignup):
     if not db_url:
         raise HTTPException(status_code=500, detail="Database isn't configured")
         
-    conn = psycopg2.connect(db_url)
+    try:
+        conn = psycopg2.connect(db_url)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        
     try:
         conn.autocommit = True
         cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -66,7 +70,11 @@ def signin(user: UserLogin):
     if not db_url:
         raise HTTPException(status_code=500, detail="Database isn't configured")
         
-    conn = psycopg2.connect(db_url)
+    try:
+        conn = psycopg2.connect(db_url)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        
     try:
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute("SELECT id, email, password_hash FROM users WHERE email = %s", (user.email,))
