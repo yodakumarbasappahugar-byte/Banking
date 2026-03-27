@@ -8,8 +8,17 @@ import { useRouter, usePathname } from 'next/navigation';
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const mockNotifs = [
     { id: 1, title: 'Transfer Successful', msg: 'You sent $200.00 to alex@test.com', time: '2m ago' },
@@ -18,27 +27,47 @@ export default function DashboardLayout({ children }) {
   ];
 
   const handleLogout = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     localStorage.removeItem('user');
     router.push('/login');
   };
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const toggleNotifs = () => setIsNotifOpen(!isNotifOpen);
+  
+  const toggleNotifs = (e) => {
+    e.stopPropagation();
+    setIsNotifOpen(!isNotifOpen);
+    setIsProfileOpen(false);
+  };
+
+  const toggleProfile = (e) => {
+    e.stopPropagation();
+    setIsProfileOpen(!isProfileOpen);
+    setIsNotifOpen(false);
+  };
+
+  // Close trays on outside click
+  useEffect(() => {
+    const closeTrays = () => {
+      setIsNotifOpen(false);
+      setIsProfileOpen(false);
+    };
+    window.addEventListener('click', closeTrays);
+    return () => window.removeEventListener('click', closeTrays);
+  }, []);
 
   return (
     <div className={styles.wrapper}>
-      {/* Sidebar Overlay for mobile */}
-      {(isSidebarOpen || isNotifOpen) && (
+      {/* Sidebar Overlay - only for mobile sidebar, no blur for trays */}
+      {isSidebarOpen && (
         <div 
           className={styles.overlay} 
-          onClick={() => { setIsSidebarOpen(false); setIsNotifOpen(false); }}
+          onClick={() => setIsSidebarOpen(false)}
           style={{
             position: 'fixed',
             inset: 0,
             backgroundColor: 'rgba(0,0,0,0.5)',
             zIndex: 999,
-            display: 'block'
           }}
         ></div>
       )}
@@ -81,7 +110,7 @@ export default function DashboardLayout({ children }) {
       <main className={styles.main}>
         {/* Top Header */}
         <header className={styles.header}>
-          <button className={styles.menuBtn} onClick={toggleSidebar}>
+          <button className={styles.menuBtn} onClick={(e) => { e.stopPropagation(); toggleSidebar(); }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           
@@ -91,7 +120,7 @@ export default function DashboardLayout({ children }) {
           </div>
           
           <div className={styles.userProfile}>
-            <div className={styles.notifications} onClick={toggleNotifs} style={{ cursor: 'pointer' }}>
+            <div className={`${styles.notifications} ${isNotifOpen ? styles.activeIcon : ''}`} onClick={toggleNotifs} style={{ cursor: 'pointer' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               <span className={styles.notifBadge}></span>
               
@@ -111,7 +140,32 @@ export default function DashboardLayout({ children }) {
                 </div>
               )}
             </div>
-            <div className={styles.avatar}>JD</div>
+
+            <div 
+              className={`${styles.avatarContainer} ${isProfileOpen ? styles.activeIcon : ''}`} 
+              onClick={toggleProfile}
+              style={{ cursor: 'pointer', position: 'relative' }}
+            >
+              <div className={styles.avatar}>{user?.email ? user.email[0].toUpperCase() : 'U'}</div>
+              
+              {/* Profile Dropdown */}
+              {isProfileOpen && (
+                <div className={styles.profileTray} onClick={(e) => e.stopPropagation()}>
+                  <div className={styles.profileHeader}>
+                    <span className={styles.profileEmail}>{user?.email || 'User Account'}</span>
+                    <span className={styles.profileId}>User ID: #00{user?.id || '---'}</span>
+                  </div>
+                  <div className={styles.trayBody}>
+                    <div className={styles.trayItem}>My Profile</div>
+                    <div className={styles.trayItem}>Settings</div>
+                    <div className={`${styles.trayItem} ${styles.logoutItem}`} onClick={handleLogout}>
+                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                       <span>Logout</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
         
