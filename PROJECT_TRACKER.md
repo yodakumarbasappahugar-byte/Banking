@@ -62,6 +62,8 @@ Banking/
 | 2026-03-27 | Fixed CORS Errors | Identified that unhandled `psycopg2` exceptions (e.g., from missing DB tables) bypassed FastAPI's CORS middleware. Added explicit exception handling in `main.py` routing to return structured 500 JSON errors with proper `Access-Control-Allow-Origin` headers. |
 | 2026-03-27 | Fixed Password Hashing | Switched from `passlib` to direct `bcrypt` library usage to resolve the `ValueError: password cannot be longer than 72 bytes`. This standardizes the hashing process and avoids library-internal length checks that were causing false failures for short passwords. |
 | 2026-03-27 | Dashboard & Redirect | Created a premium, dark-themed dashboard at `/dashboard` and updated the login flow to automatically redirect users upon successful authentication, replacing the old success alert. |
+| 2026-03-27 | Functional & Responsive Dashboard | Implemented a full fund transfer system with SQL atomicity, real-time balance fetching, and transaction history. Added mobile responsiveness with a toggleable sidebar and feedback toasts for a premium user experience. |
+| 2026-03-27 | User Management & Interactive UI | Added a secure user listing API, a searchable 'Users' management page, and an interactive notification tray with premium glassmorphism effects and real-time state management. |
 
 ---
 

@@ -154,6 +154,29 @@ def get_summary(user_id: int):
         cur.close()
         conn.close()
 
+@app.get("/api/users")
+def list_users():
+    if not db_url:
+        raise HTTPException(status_code=500, detail="Database isn't configured")
+    
+    try:
+        conn = psycopg2.connect(db_url)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        cur.execute("SELECT id, email, mobile_number, balance, created_at FROM users ORDER BY created_at DESC")
+        users = cur.fetchall()
+        
+        # Convert balance to float for JSON serialization
+        for u in users:
+            u["balance"] = float(u["balance"])
+            
+        return users
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cur.close()
+        conn.close()
+
 @app.post("/api/transactions/transfer")
 def transfer_funds(req: TransferRequest):
     if not db_url:

@@ -1,0 +1,161 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  gap: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 20px;
+  border-radius: 12px;
+  width: 350px;
+}
+
+.searchBox input {
+  background: none;
+  border: none;
+  color: white;
+  outline: none;
+  width: 100%;
+}
+
+.userList {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  padding: 15px 30px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.userRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  padding: 20px 30px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  transition: background 0.2s;
+}
+
+.userRow:hover {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.email {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.id {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.balance {
+  font-weight: 600;
+  color: #10b981;
+}
+
+.mobileNumber, .joinedDate {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: #94a3b8;
+}
+
+.noResults {
+  padding: 50px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.showMobile { display: none; }
+
+@media (max-width: 1024px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .searchBox {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hideMobile {
+    display: none;
+  }
+  
+  .tableHeader, .userRow {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .showMobile {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+}

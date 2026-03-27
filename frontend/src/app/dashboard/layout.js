@@ -3,11 +3,19 @@
 import { useState, useEffect } from 'react';
 import styles from './dashboard.module.css';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+
+  const mockNotifs = [
+    { id: 1, title: 'Transfer Successful', msg: 'You sent $200.00 to alex@test.com', time: '2m ago' },
+    { id: 2, title: 'Security Alert', msg: 'New login detected from Mumbai, IN', time: '1h ago' },
+    { id: 3, title: 'System Update', msg: 'Dashboard v1.2 is now live with Users view', time: 'Yesterday' }
+  ];
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -15,17 +23,16 @@ export default function DashboardLayout({ children }) {
     router.push('/login');
   };
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const toggleNotifs = () => setIsNotifOpen(!isNotifOpen);
 
   return (
     <div className={styles.wrapper}>
       {/* Sidebar Overlay for mobile */}
-      {isSidebarOpen && (
+      {(isSidebarOpen || isNotifOpen) && (
         <div 
           className={styles.overlay} 
-          onClick={() => setIsSidebarOpen(false)}
+          onClick={() => { setIsSidebarOpen(false); setIsNotifOpen(false); }}
           style={{
             position: 'fixed',
             inset: 0,
@@ -44,7 +51,7 @@ export default function DashboardLayout({ children }) {
         </div>
         
         <nav className={styles.nav}>
-          <Link href="/dashboard" className={styles.navLinkActive}>
+          <Link href="/dashboard" className={pathname === '/dashboard' ? styles.navLinkActive : styles.navLink}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
             <span>Overview</span>
           </Link>
@@ -56,10 +63,10 @@ export default function DashboardLayout({ children }) {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
             <span>My Cards</span>
           </div>
-          <div className={styles.navLink}>
+          <Link href="/dashboard/users" className={pathname === '/dashboard/users' ? styles.navLinkActive : styles.navLink}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             <span>Users</span>
-          </div>
+          </Link>
         </nav>
         
         <div className={styles.sidebarFooter}>
@@ -84,9 +91,25 @@ export default function DashboardLayout({ children }) {
           </div>
           
           <div className={styles.userProfile}>
-            <div className={styles.notifications}>
+            <div className={styles.notifications} onClick={toggleNotifs} style={{ cursor: 'pointer' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               <span className={styles.notifBadge}></span>
+              
+              {/* Notification Tray */}
+              {isNotifOpen && (
+                <div className={styles.notifTray} onClick={(e) => e.stopPropagation()}>
+                   <div className={styles.trayHeader}>Notifications</div>
+                   <div className={styles.trayBody}>
+                      {mockNotifs.map(n => (
+                        <div key={n.id} className={styles.notifItem}>
+                           <div className={styles.notifTitle}>{n.title}</div>
+                           <div className={styles.notifMsg}>{n.msg}</div>
+                           <div className={styles.notifTime}>{n.time}</div>
+                        </div>
+                      ))}
+                   </div>
+                </div>
+              )}
             </div>
             <div className={styles.avatar}>JD</div>
           </div>
