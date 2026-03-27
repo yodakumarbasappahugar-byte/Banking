@@ -114,7 +114,7 @@ export default function CardsPage() {
                 <div className={styles.cardMeta}>
                   <div className={styles.metaItem}>
                     <span>HOLDER NAME</span>
-                    <div className={styles.val}>{user?.full_name || 'Nidhi Member'}</div>
+                    <div className={styles.val}>{user?.full_name || 'Card Holder'}</div>
                   </div>
                   <div className={styles.metaItem}>
                     <span>EXPIRY</span>

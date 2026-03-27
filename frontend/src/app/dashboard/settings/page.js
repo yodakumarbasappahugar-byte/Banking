@@ -51,7 +51,7 @@ export default function SettingsPage() {
                {user.full_name ? user.full_name[0].toUpperCase() : user.email[0].toUpperCase()}
             </div>
             <div className={styles.profileInfo}>
-              <h2 className={styles.profileName}>{user.full_name || 'Nidhi Member'}</h2>
+              <h2 className={styles.profileName}>{user.full_name || 'User'}</h2>
               <p className={styles.profileEmail}>{user.email}</p>
               <div className={styles.badge}>Verified Account</div>
             </div>

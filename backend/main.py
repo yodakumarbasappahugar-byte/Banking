@@ -25,6 +25,7 @@ app.add_middleware(
 # We now use the bcrypt library directly.
 
 class UserSignup(BaseModel):
+    full_name: str
     email: str
     mobile_number: str
     password: str
@@ -66,8 +67,8 @@ def signup(user: UserSignup):
         salt = bcrypt.gensalt()
         hashed_pwd = bcrypt.hashpw(password_bytes, salt).decode('utf-8')
         cur.execute(
-            "INSERT INTO users (email, mobile_number, password_hash) VALUES (%s, %s, %s) RETURNING id, email, mobile_number",
-            (user.email, user.mobile_number, hashed_pwd)
+            "INSERT INTO users (full_name, email, mobile_number, password_hash) VALUES (%s, %s, %s, %s) RETURNING id, full_name, email, mobile_number",
+            (user.full_name, user.email, user.mobile_number, hashed_pwd)
         )
         new_user = cur.fetchone()
         return {"message": "Account created successfully!", "user": new_user}
@@ -91,7 +92,7 @@ def signin(user: UserLogin):
         
     try:
         cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("SELECT id, email, password_hash FROM users WHERE email = %s", (user.email,))
+        cur.execute("SELECT id, full_name, email, password_hash FROM users WHERE email = %s", (user.email,))
         db_user = cur.fetchone()
         
         if not db_user:
@@ -103,7 +104,7 @@ def signin(user: UserLogin):
         if not bcrypt.checkpw(password_bytes, db_hash_bytes):
             raise HTTPException(status_code=401, detail="Invalid email or password")
             
-        return {"message": "Login successful", "user": {"id": db_user["id"], "email": db_user["email"]}}
+        return {"message": "Login successful", "user": {"id": db_user["id"], "full_name": db_user["full_name"], "email": db_user["email"]}}
     except Exception as e:
         if isinstance(e, HTTPException):
             raise e

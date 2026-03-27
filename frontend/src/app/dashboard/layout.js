@@ -179,7 +179,7 @@ export default function DashboardLayout({ children }) {
             <div className={styles.profile} onClick={() => { setProfileOpen(!isProfileOpen); setNotifOpen(false); }}>
               <div className={styles.avatar}>{user?.full_name ? user.full_name[0].toUpperCase() : user?.email ? user.email[0].toUpperCase() : 'U'}</div>
               <div className={styles.userInfo}>
-                <span className={styles.userName}>{user?.full_name || 'Global User'}</span>
+                <span className={styles.userName}>{user?.full_name || 'User'}</span>
                 <span className={styles.userRole}>Premium Account</span>
               </div>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={isProfileOpen ? styles.chevronUp : ''}><path d="m6 9 6 6 6-6"/></svg>
@@ -246,7 +246,7 @@ export default function DashboardLayout({ children }) {
                   <div className={styles.modalSection}>
                     <label>Full Name</label>
                     <div className={styles.modalFlex}>
-                      <div className={styles.modalVal}>{user?.full_name || 'Nidhi Member'}</div>
+                      <div className={styles.modalVal}>{user?.full_name || 'Valued Member'}</div>
                     </div>
                   </div>
                   <div className={styles.modalGrid}>

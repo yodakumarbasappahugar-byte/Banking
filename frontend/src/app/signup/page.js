@@ -5,6 +5,7 @@ import styles from '../login/login.module.css'; // Reusing styles for consistenc
 import Link from 'next/link';
 
 export default function SignupPage() {
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
@@ -24,6 +25,7 @@ export default function SignupPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
+          full_name: fullName,
           email, 
           mobile_number: mobileNumber, 
           password 
@@ -57,6 +59,19 @@ export default function SignupPage() {
         {error && <div className={styles.errorMsg}>{error}</div>}
         
         <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="fullName">Full Name</label>
+            <input
+              type="text"
+              id="fullName"
+              className={styles.input}
+              placeholder="John Doe"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+            />
+          </div>
+
           <div className={styles.formGroup}>
             <label className={styles.label} htmlFor="email">Email</label>
             <input
