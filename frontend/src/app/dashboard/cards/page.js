@@ -53,6 +53,19 @@ export default function CardsPage() {
     alert("New virtual card generated successfully!");
   };
 
+  const handleRemoveCard = () => {
+    if (cards.length <= 1) {
+      alert("You must have at least one card active.");
+      return;
+    }
+    if (confirm("Are you sure you want to remove this card? This action cannot be undone.")) {
+      const updatedCards = cards.filter((_, i) => i !== activeCardIndex);
+      setCards(updatedCards);
+      setActiveCardIndex(0);
+      setShowFullDetails(false);
+    }
+  };
+
   const toggleFreeze = () => {
     const updatedCards = [...cards];
     updatedCards[activeCardIndex].isFrozen = !updatedCards[activeCardIndex].isFrozen;
@@ -125,6 +138,9 @@ export default function CardsPage() {
               </button>
               <button className={`${styles.actionBtn} ${currentCard.isFrozen ? styles.unfreeze : styles.freeze}`} onClick={toggleFreeze}>
                 {currentCard.isFrozen ? 'Unfreeze Card' : 'Freeze Card'}
+              </button>
+              <button className={`${styles.actionBtn} ${styles.removeBtn}`} onClick={handleRemoveCard}>
+                Remove Card
               </button>
             </div>
           </div>

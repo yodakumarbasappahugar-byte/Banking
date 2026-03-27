@@ -33,12 +33,30 @@ export default function DashboardLayout({ children }) {
       router.push('/login');
     }
 
+    const handleNewTransaction = (e) => {
+      const { type, amount, message } = e.detail;
+      const newNotif = {
+        id: Date.now(),
+        title: type === 'DEBIT' ? 'Transaction Sent' : 'Payment Received',
+        desc: message,
+        time: 'Just now',
+        type: type === 'DEBIT' ? 'warning' : 'success',
+        icon: type === 'DEBIT' ? '💸' : '💰',
+        isNew: true
+      };
+      
+      setNotifications(prev => [newNotif, ...prev]);
+      setNotifOpen(true);
+    };
+
+    window.addEventListener('new-transaction', handleNewTransaction);
     window.addEventListener('storage', () => {
       const u = localStorage.getItem('user');
       if (u) setUser(JSON.parse(u));
     });
 
     return () => {
+      window.removeEventListener('new-transaction', handleNewTransaction);
     };
   }, [router]);
 
