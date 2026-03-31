@@ -159,3 +159,13 @@
 .link:hover {
   color: #fff;
 }
+@media (max-width: 480px) {
+  .loginCard {
+    padding: 2rem 1.5rem;
+    width: 95%;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+}

@@ -127,6 +127,22 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  gap: 15px;
+}
+
+.menuBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.menuBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .search {
@@ -171,6 +187,25 @@
 
 .search input::placeholder {
   color: #475569;
+}
+
+.searchBtn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.searchBtn:hover {
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
 }
 
 .actions {
@@ -374,6 +409,38 @@
   .sidebar {
     transform: translateX(-100%);
     z-index: 1000;
+    width: 280px;
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .sidebarVisible {
+    transform: translateX(0);
+  }
+
+  .sidebarClose {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: var(--text-muted);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sidebarClose:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+
+  .menuBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .main {
@@ -382,15 +449,71 @@
   
   .header {
     padding: 0 20px;
+    justify-content: space-between;
   }
   
+  .search {
+    display: none; /* Hide search bar on mobile header to save space */
+  }
+
+  .actions {
+    gap: 12px;
+  }
+
+  .userName, .userRole {
+    display: none; /* Hide user text on very small screens */
+  }
+
+  .profile {
+    padding: 4px;
+  }
+
   .content {
     padding: 20px;
   }
-  
-  .searchBar {
-    display: none;
+
+  .grid {
+    grid-template-columns: 1fr !important;
   }
+
+  .section {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .modal {
+    padding: 20px;
+    border-radius: 24px;
+  }
+
+  .modalAvatarContainer {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .modalGrid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin-bottom: 30px;
 }
 
 .noData {

@@ -93,7 +93,7 @@ function DashboardContent() {
         detail: {
           type: 'DEBIT',
           amount: parseFloat(amount),
-          message: `Sent $${parseFloat(amount).toLocaleString()} to ${receiverEmail}`
+          message: `Sent ₹${parseFloat(amount).toLocaleString('en-IN')} to ${receiverEmail}`
         }
       }));
     } catch (err) {
@@ -115,17 +115,17 @@ function DashboardContent() {
       <div className={styles.grid}>
         <div className={styles.statCard}>
           <span className={styles.cardLabel}>Total Balance</span>
-          <span className={styles.cardValue}>${summary.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+          <span className={styles.cardValue}>₹{summary.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
           <span className={styles.cardTrend}>+2.4% from last month</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.cardLabel}>Monthly Income</span>
-          <span className={styles.cardValue}>$12,400.00</span>
+          <span className={styles.cardValue}>₹12,400.00</span>
           <span className={styles.cardTrend}>+4.1% from last month</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.cardLabel}>Monthly Expenses</span>
-          <span className={styles.cardValue}>$3,842.12</span>
+          <span className={styles.cardValue}>₹3,842.12</span>
           <span className={styles.cardTrend} style={{ color: '#f87171' }}>-1.2% from last month</span>
         </div>
       </div>
@@ -155,7 +155,7 @@ function DashboardContent() {
                     key={t.id}
                     name={t.sender_id === user.id ? `To: ${t.receiver_email}` : `From: ${t.sender_email}`}
                     date={new Date(t.created_at).toLocaleDateString()} 
-                    amount={t.sender_id === user.id ? `-$${t.amount}` : `+$${t.amount}`}
+                    amount={t.sender_id === user.id ? `-₹${t.amount.toLocaleString('en-IN')}` : `+₹${t.amount.toLocaleString('en-IN')}`}
                     positive={t.sender_id !== user.id}
                   />
                 ))
@@ -189,7 +189,7 @@ function DashboardContent() {
             </div>
             
             <div className={styles.formGroup}>
-              <label>Amount ($)</label>
+              <label>Amount (₹)</label>
               <input 
                 type="number" 
                 step="0.01"

@@ -87,7 +87,7 @@ export default function UsersPage() {
             </div>
 
             <div className={`${styles.balanceDetails} ${styles.colBalance}`}>
-              <span className={styles.balance}>${u.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+              <span className={styles.balance}>₹{u.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
             </div>
             
             <div className={`${styles.joinedDetails} ${styles.colJoined} ${styles.hideMobile}`}>
