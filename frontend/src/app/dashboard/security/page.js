@@ -7,6 +7,7 @@ export default function SecurityPage() {
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [isLoading, setIsLoading] = useState(false);
 
   const mockActivity = [
     { id: 1, event: 'Login', device: 'Chrome / Windows', location: 'Mumbai, IN', time: 'Just now', status: 'success' },
@@ -15,16 +16,53 @@ export default function SecurityPage() {
     { id: 4, event: 'Settings Change', device: 'Chrome / Windows', location: 'Mumbai, IN', time: '2 days ago', status: 'success' }
   ];
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
+    setMessage({ type: '', text: '' });
+
     if (passwordData.new !== passwordData.confirm) {
       setMessage({ type: 'error', text: 'Passwords do not match!' });
       return;
     }
-    // Mock success
-    setMessage({ type: 'success', text: 'Password updated successfully!' });
-    setPasswordData({ current: '', new: '', confirm: '' });
-    setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+
+    if (passwordData.new.length < 6) {
+      setMessage({ type: 'error', text: 'New password must be at least 6 characters long.' });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) throw new Error("No user session found");
+      const user = JSON.parse(userStr);
+
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://banking-backend-api.onrender.com';
+      const res = await fetch(`${backendUrl}/api/auth/password/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          current_password: passwordData.current,
+          new_password: passwordData.new
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.detail || 'Failed to update password');
+      }
+
+      setMessage({ type: 'success', text: 'Password updated successfully!' });
+      setPasswordData({ current: '', new: '', confirm: '' });
+      setTimeout(() => setMessage({ type: '', text: '' }), 5000);
+    } catch (err) {
+      setMessage({ type: 'error', text: err.message });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -75,7 +113,9 @@ export default function SecurityPage() {
                 {message.text}
               </div>
             )}
-            <button type="submit" className={styles.submitBtn}>Update Password</button>
+            <button type="submit" className={styles.submitBtn} disabled={isLoading}>
+              {isLoading ? 'Updating...' : 'Update Password'}
+            </button>
           </form>
 
           <div className={styles.twoFactor}>

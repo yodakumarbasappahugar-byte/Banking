@@ -10,12 +10,14 @@ export default function SignupPage() {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://banking-backend-api.onrender.com';
@@ -38,8 +40,10 @@ export default function SignupPage() {
         throw new Error(data.detail || 'Failed to sign up');
       }
       
-      alert('Account created successfully! You can now sign in.');
-      window.location.href = '/login';
+      setSuccess('Account created successfully! Redirecting to login...');
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 3000);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -57,6 +61,7 @@ export default function SignupPage() {
         <p className={styles.subtitle}>Join NidhiBank today for premium banking</p>
         
         {error && <div className={styles.errorMsg}>{error}</div>}
+        {success && <div className={styles.successMsg}>{success}</div>}
         
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>

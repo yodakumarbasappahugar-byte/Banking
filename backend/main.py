@@ -40,6 +40,11 @@ class TransferRequest(BaseModel):
     amount: float
     description: str = "Transfer"
 
+class PasswordChangeRequest(BaseModel):
+    user_id: int
+    current_password: str
+    new_password: str
+
 @app.get("/health")
 def health_check():
     return {"status": "ok", "message": "Nidhi Bank Backend is running"}
@@ -226,6 +231,42 @@ def transfer_funds(req: TransferRequest):
             raise e
             
         return {"message": "Transfer successful!"}
+        
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cur.close()
+        conn.close()
+
+@app.post("/api/auth/password/update")
+def update_password(req: PasswordChangeRequest):
+    if not db_url:
+        raise HTTPException(status_code=500, detail="Database isn't configured")
+        
+    try:
+        conn = psycopg2.connect(db_url)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # 1. Fetch user to verify current password
+        cur.execute("SELECT password_hash FROM users WHERE id = %s", (req.user_id,))
+        user = cur.fetchone()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+        # 2. Verify current password
+        if not bcrypt.checkpw(req.current_password.encode('utf-8'), user["password_hash"].encode('utf-8')):
+            raise HTTPException(status_code=401, detail="Incorrect current password")
+            
+        # 3. Hash and update new password
+        salt = bcrypt.gensalt()
+        new_hashed_password = bcrypt.hashpw(req.new_password.encode('utf-8'), salt).decode('utf-8')
+        
+        cur.execute("UPDATE users SET password_hash = %s WHERE id = %s", (new_hashed_password, req.user_id))
+        conn.commit()
+        
+        return {"message": "Password updated successfully!"}
         
     except Exception as e:
         if isinstance(e, HTTPException):
