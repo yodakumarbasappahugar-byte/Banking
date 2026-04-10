@@ -58,6 +58,11 @@
   font-size: 18px;
 }
 
+.adminLogo {
+  background: linear-gradient(135deg, #f59e0b, #ea580c) !important;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+}
+
 .nav {
   display: flex;
   flex-direction: column;
@@ -542,6 +547,78 @@
 .cardTrend {
   font-size: 12px;
   color: #10b981;
+}
+
+.adminCard {
+  border: 1px solid rgba(245, 158, 11, 0.1);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(245, 158, 11, 0.02));
+}
+
+.adminTag {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #f59e0b;
+  display: block;
+  margin-top: 5px;
+  letter-spacing: 0.5px;
+}
+
+.adminIcon {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: #f59e0b;
+}
+
+.adminActionBox {
+  padding: 10px 0;
+}
+
+.adminHint {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.manageBtn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.manageBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+.systemStatus {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #10b981;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #10b981;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 
 .section {

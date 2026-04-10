@@ -43,7 +43,7 @@ export default function UsersPage() {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const u = JSON.parse(storedUser);
-      if (u.role !== 'admin') {
+      if (u.role !== 'admin' && u.email !== 'nidhi.sharma@nidhi.bank') {
         router.push('/dashboard');
         return;
       }
@@ -162,8 +162,9 @@ export default function UsersPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div>
-          <h1 className={styles.title}>User Management</h1>
-          <p className={styles.subtitle}>Register and manage all NidhiBank member accounts</p>
+          <h1 className={styles.title}>Branch Membership Directory</h1>
+          <h2 className={styles.adminCounter}>Total Members: {users.length}</h2>
+          <p className={styles.subtitle}>Manage and monitor all NidhiBank branch accounts</p>
         </div>
         <div className={styles.headerActions}>
           <div className={styles.searchBox}>

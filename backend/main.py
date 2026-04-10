@@ -176,6 +176,49 @@ def get_summary(user_id: int):
         cur.close()
         conn.close()
 
+@app.get("/api/admin/branch-stats")
+def get_branch_stats():
+    if not db_url:
+        raise HTTPException(status_code=500, detail="Database isn't configured")
+    
+    try:
+        conn = psycopg2.connect(db_url)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # 1. Total User Count
+        cur.execute("SELECT COUNT(*) as total_users FROM users")
+        total_users = cur.fetchone()["total_users"]
+        
+        # 2. Total Branch Balance
+        cur.execute("SELECT SUM(balance) as total_balance FROM users")
+        total_balance = float(cur.fetchone()["total_balance"] or 0)
+        
+        # 3. Total Transactions Today
+        cur.execute("SELECT COUNT(*) as transactions_today FROM transactions WHERE DATE(created_at) = CURRENT_DATE")
+        transactions_today = cur.fetchone()["transactions_today"]
+        
+        # 4. Recent Global Transactions (last 5)
+        cur.execute("""
+            SELECT t.*, u_s.full_name as sender_name, u_r.full_name as receiver_name 
+            FROM transactions t
+            LEFT JOIN users u_s ON t.sender_id = u_s.id
+            LEFT JOIN users u_r ON t.receiver_id = u_r.id
+            ORDER BY t.created_at DESC LIMIT 5
+        """)
+        recent_global_transactions = cur.fetchall()
+        
+        return {
+            "total_users": total_users,
+            "total_balance": total_balance,
+            "transactions_today": transactions_today,
+            "recent_transactions": recent_global_transactions
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cur.close()
+        conn.close()
+
 @app.get("/api/users")
 def list_users():
     if not db_url:

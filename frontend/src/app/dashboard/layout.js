@@ -153,8 +153,10 @@ export default function DashboardLayout({ children }) {
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarVisible : ''}`}>
         <div className={styles.logo}>
-          <div className={styles.logoIcon}>NB</div>
-          <span className={styles.logoText}>NidhiBank</span>
+          <div className={`${styles.logoIcon} ${(user?.role === 'admin' || user?.email === 'nidhi.sharma@nidhi.bank') ? styles.adminLogo : ''}`}>NB</div>
+          <span className={styles.logoText}>
+            {(user?.role === 'admin' || user?.email === 'nidhi.sharma@nidhi.bank') ? 'Branch Head' : 'NidhiBank'}
+          </span>
         </div>
 
         <nav className={styles.nav}>
@@ -170,10 +172,10 @@ export default function DashboardLayout({ children }) {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
             <span>My Cards</span>
           </Link>
-          {user?.role === 'admin' && (
+          {(user?.role === 'admin' || user?.email === 'nidhi.sharma@nidhi.bank') && (
             <Link href="/dashboard/users" className={pathname === '/dashboard/users' ? styles.navLinkActive : styles.navLink}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              <span>Users</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a2 2 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M17 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg>
+              <span>Branch Management</span>
             </Link>
           )}
         </nav>

@@ -18,7 +18,9 @@ function DashboardContent() {
   const query = searchParams.get('q') || '';
 
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [summary, setSummary] = useState({ balance: 0, transactions: [] });
+  const [branchStats, setBranchStats] = useState({ total_users: 0, total_balance: 0, transactions_today: 0, recent_transactions: [] });
   const [loading, setLoading] = useState(true);
   
   // Transfer Form State
@@ -37,8 +39,29 @@ function DashboardContent() {
     }
     const parsedUser = JSON.parse(storedUser);
     setUser(parsedUser);
-    fetchSummary(parsedUser.id);
+    const adminMode = parsedUser.role === 'admin' || parsedUser.email === 'nidhi.sharma@nidhi.bank';
+    setIsAdmin(adminMode);
+    
+    if (adminMode) {
+      fetchBranchStats();
+    } else {
+      fetchSummary(parsedUser.id);
+    }
   }, []);
+
+  const fetchBranchStats = async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/admin/branch-stats`);
+      if (res.ok) {
+        const data = await res.json();
+        setBranchStats(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch branch stats", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchSummary = async (userId) => {
     try {
@@ -113,46 +136,70 @@ function DashboardContent() {
       
       {/* Stats Grid */}
       <div className={styles.grid}>
-        <div className={styles.statCard}>
-          <span className={styles.cardLabel}>Total Balance</span>
-          <span className={styles.cardValue}>₹{summary.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
-          <span className={styles.cardTrend}>+2.4% from last month</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.cardLabel}>Monthly Income</span>
-          <span className={styles.cardValue}>₹12,400.00</span>
-          <span className={styles.cardTrend}>+4.1% from last month</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.cardLabel}>Monthly Expenses</span>
-          <span className={styles.cardValue}>₹3,842.12</span>
-          <span className={styles.cardTrend} style={{ color: '#f87171' }}>-1.2% from last month</span>
-        </div>
+        {isAdmin ? (
+          <>
+            <div className={`${styles.statCard} ${styles.adminCard}`}>
+              <span className={styles.cardLabel}>Total Branch Assets</span>
+              <span className={styles.cardValue}>₹{branchStats.total_balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              <span className={styles.adminTag}>Branch Head View</span>
+            </div>
+            <div className={`${styles.statCard} ${styles.adminCard}`}>
+              <span className={styles.cardLabel}>Active Members</span>
+              <span className={styles.cardValue}>{branchStats.total_users} People</span>
+              <span className={styles.adminTag}>Growth: +2 new this week</span>
+            </div>
+            <div className={`${styles.statCard} ${styles.adminCard}`}>
+              <span className={styles.cardLabel}>Transactions Today</span>
+              <span className={styles.cardValue}>{branchStats.transactions_today}</span>
+              <span className={styles.adminTag}>System Online</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={styles.statCard}>
+              <span className={styles.cardLabel}>Total Balance</span>
+              <span className={styles.cardValue}>₹{summary.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              <span className={styles.cardTrend}>+2.4% from last month</span>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.cardLabel}>Monthly Income</span>
+              <span className={styles.cardValue}>₹12,400.00</span>
+              <span className={styles.cardTrend}>+4.1% from last month</span>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.cardLabel}>Monthly Expenses</span>
+              <span className={styles.cardValue}>₹3,842.12</span>
+              <span className={styles.cardTrend} style={{ color: '#f87171' }}>-1.2% from last month</span>
+            </div>
+          </>
+        )}
       </div>
 
       <div className={styles.mainGrid}>
-        {/* Recent Transactions */}
+        {/* Recent Transactions / Global Activity */}
         <div className={styles.section}>
           <div className={styles.sectionTitle}>
-            <span>Recent Transactions</span>
-            <button className={styles.viewAll} onClick={() => router.push('/dashboard')}>View all</button>
+            <span>{isAdmin ? 'Global Branch Activity' : 'Recent Transactions'}</span>
+            <button className={styles.viewAll} onClick={() => router.push(isAdmin ? '/dashboard/users' : '/dashboard')}>View all</button>
           </div>
           
           <div className={styles.transList}>
-            {(summary.transactions || []).filter(t => 
-              t.receiver_email?.toLowerCase().includes(query.toLowerCase()) ||
-              t.sender_email?.toLowerCase().includes(query.toLowerCase()) ||
-              t.description?.toLowerCase().includes(query.toLowerCase()) ||
-              t.amount.toString().includes(query)
-            ).length > 0 ? (
-              summary.transactions
-                .filter(t => 
-                  t.receiver_email?.toLowerCase().includes(query.toLowerCase()) ||
-                  t.sender_email?.toLowerCase().includes(query.toLowerCase()) ||
-                  t.description?.toLowerCase().includes(query.toLowerCase()) ||
-                  t.amount.toString().includes(query)
-                )
-                .map((t) => (
+            {isAdmin ? (
+              branchStats.recent_transactions.length > 0 ? (
+                branchStats.recent_transactions.map((t) => (
+                  <TransactionItem 
+                    key={t.id}
+                    name={`From: ${t.sender_name} To: ${t.receiver_name}`}
+                    date={new Date(t.created_at).toLocaleDateString()} 
+                    amount={`₹${t.amount.toLocaleString('en-IN')}`}
+                    positive={true}
+                    isAdmin={true}
+                  />
+                ))
+              ) : <p className={styles.noData}>No global activity logged</p>
+            ) : (
+              (summary.transactions || []).length > 0 ? (
+                summary.transactions.map((t) => (
                   <TransactionItem 
                     key={t.id}
                     name={t.sender_id === user.id ? `To: ${t.receiver_email}` : `From: ${t.sender_email}`}
@@ -161,69 +208,85 @@ function DashboardContent() {
                     positive={t.sender_id !== user.id}
                   />
                 ))
-            ) : (
-              <p className={styles.noData}>
-                {query ? `No transactions matching "${query}"` : 'No recent transactions'}
-              </p>
+              ) : <p className={styles.noData}>No recent transactions</p>
             )}
           </div>
         </div>
 
-        {/* Quick Actions / Transfer Form */}
+        {/* Action Center */}
         <div className={styles.section}>
-          <div className={styles.sectionTitle}>Quick Transfer</div>
-          <form className={styles.transferForm} onSubmit={handleSendMoney}>
-            {message.text && (
-              <div className={message.type === 'success' ? styles.successMsg : styles.errorMsg}>
-                {message.text}
+          <div className={styles.sectionTitle}>{isAdmin ? 'Branch Head Controls' : 'Quick Transfer'}</div>
+          {isAdmin ? (
+            <div className={styles.adminActionBox}>
+              <p className={styles.adminHint}>As Branch Head, you can manage all users and transactions from the "Branch Management" portal.</p>
+              <button className={styles.manageBtn} onClick={() => router.push('/dashboard/users')}>
+                Go to Management Portal
+              </button>
+              <div className={styles.systemStatus}>
+                <div className={styles.statusDot}></div>
+                <span>Server Status: Operational</span>
               </div>
-            )}
-            
-            <div className={styles.formGroup}>
-              <label>Receiver Email</label>
-              <input 
-                type="email" 
-                placeholder="friend@example.com"
-                value={receiverEmail}
-                onChange={(e) => setReceiverEmail(e.target.value)}
-                required
-              />
             </div>
-            
-            <div className={styles.formGroup}>
-              <label>Amount (₹)</label>
-              <input 
-                type="number" 
-                step="0.01"
-                placeholder="0.00"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                required
-              />
-            </div>
-            
-            <button 
-              type="submit" 
-              className={styles.sendBtn}
-              disabled={isTransferring}
-            >
-              {isTransferring ? 'Processing...' : 'Send Money'}
-            </button>
-          </form>
+          ) : (
+            <form className={styles.transferForm} onSubmit={handleSendMoney}>
+              {message.text && (
+                <div className={message.type === 'success' ? styles.successMsg : styles.errorMsg}>
+                  {message.text}
+                </div>
+              )}
+              
+              <div className={styles.formGroup}>
+                <label>Receiver Email</label>
+                <input 
+                  type="email" 
+                  placeholder="friend@example.com"
+                  value={receiverEmail}
+                  onChange={(e) => setReceiverEmail(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label>Amount (₹)</label>
+                <input 
+                  type="number" 
+                  step="0.01"
+                  placeholder="0.00"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <button 
+                type="submit" 
+                className={styles.sendBtn}
+                disabled={isTransferring}
+              >
+                {isTransferring ? 'Processing...' : 'Send Money'}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function TransactionItem({ name, date, amount, positive }) {
+function TransactionItem({ name, date, amount, positive, isAdmin }) {
   return (
     <div className={styles.transItem}>
       <div className={styles.transInfo}>
-        <div className={styles.transIcon}>
+        <div className={`${styles.transIcon} ${isAdmin ? styles.adminIcon : ''}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="2" y="5" width="20" height="14" rx="2" />
-            <line x1="2" y1="10" x2="22" y2="10" />
+            {isAdmin ? (
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            ) : (
+                <>
+                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                    <line x1="2" y1="10" x2="22" y2="10" />
+                </>
+            )}
           </svg>
         </div>
         <div className={styles.transDetails}>
